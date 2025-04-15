@@ -49,14 +49,24 @@ def free(maze,current):
         # Determining the available positions to "dig"
         x, y = current
         neighbors = []
+        if x == 1 or x == maze.shape[0]-1 :
+            if y - 1 > 0 and maze[x,y-1] == 0 : 
+                neighbors.append((x,y-1))
+            if y+1 < maze.shape[1]-1 and maze[x,y+1] == 0 :
+                neighbors.append((x,y+1))
+        if y == 1 or y == maze.shape[1]-1 :
+            if x - 1 > 0 and maze[x-1,y] == 0 : 
+                neighbors.append((x-1,y))
+            if x+1 < maze.shape[1]-1 and maze[x+1,y] == 0 :
+                neighbors.append((x+1,y))
 
-        if x > 0 :
+        if x > 1 and maze[(x-2,y)] == 0 :
             neighbors.append((x - 1, y))
-        if x < maze.shape[0]-1 :
+        if x < maze.shape[0]-2 and maze[(x+2,y)] == 0 :
             neighbors.append((x + 1, y))
-        if y > 0 :
+        if y > 1 and maze[(x,y-2)] == 0 :
             neighbors.append((x, y - 1))
-        if y < maze.shape[1]-1 :
+        if y < maze.shape[1]-2 and maze[(x,y+2)] == 0 :
             neighbors.append((x, y + 1))
 
         for el in neighbors : 
@@ -70,10 +80,12 @@ def free(maze,current):
             one_list = [tuple(pos) for pos in np.argwhere(maze==1)]
             current = one_list[rd.randint(0,len(one_list)-1)]
 
+        print("stuckkk")
+
     return available
 
 def head_or_tail():
     return rd.randint(0,1)
 
 
-af.affiche_maze(generate(50))
+af.affiche_maze(generate())
