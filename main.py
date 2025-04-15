@@ -1,5 +1,6 @@
 import random as rd
 import numpy as np 
+import affichage as af
 
 def generate(n =10):
     maze = init(n)
@@ -75,4 +76,4 @@ def head_or_tail():
     return rd.randint(0,1)
 
 
-print(generate())
+af.affiche_maze(generate(50))
