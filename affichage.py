@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt 
 from matplotlib.colors import ListedColormap
 
-colors = ['black', 'white', 'green', 'red']  # 0=mur, 1=chemin, 2=départ, 3=arrivée
+colors = ['red', 'black', 'white', 'green','orange']  # 0=mur, 1=chemin, 2=départ, 3=arrivée
 cmap = ListedColormap(colors)
 
 def affiche_maze(maze):
