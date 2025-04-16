@@ -2,15 +2,24 @@ import random as rd
 import numpy as np 
 import affichage as af
 
-def generate(n =10):
+def generate(n = 11):
+
+    if n<=2:
+        n = 3
+    if not n%2==1:
+        n+=1
+    
     maze = init(n)
     start,end = exits(n)
 
-    maze[start], maze[end] = 2,-1
-
-    maze = fill(maze,start,end)
+    maze = visit(maze,start)
 
     maze[start], maze[end] = 2,-1
+
+    if end[0]==n-1:
+        maze[(end[0]-1, end[1])] = 1
+    else :
+        maze[(end[0], end[1]-1)] = 1
 
     return maze
 
@@ -25,63 +34,54 @@ def init(n):
 
 def exits(n):
     if head_or_tail():
-        start = (0, rd.randint(1,n-2))
+        start = (0, rd.randint(2,n-3))
     else :
-        start = (rd.randint(1,n-2),0)
+        start = (rd.randint(2,n-3),0)
     
     if head_or_tail():
-        exit = (n-1,rd.randint(1,n-2))
+        ex_ind = rd.randint(2,n-3)
+        end = (n-1,ex_ind)
     else :
-        exit = (rd.randint(1,n-2),n-1)
+        ex_ind = rd.randint(2,n-3)
+        end = (ex_ind,n-1)
 
-    while exit == start :
-        exit = (rd.randint(0,n-1),rd.randint(0,n-1))
-    return start,exit
+    while end == start :
+        ex_ind = rd.randint(2,n-3)
+        end = (n-1, ex_ind)
+    return start,end
 
-def fill(maze,start,end):
-    current = start
-    while current != end :
-        available = free(maze,current)
-        current = available[rd.randint(0,len(available)-1)]
-        maze[current] = 1
-    return maze
+def visit(maze,current):
+    maze[current] = 1
+    x, y = current
 
-def free(maze,current):
-    available = []
-    stop = 0
+    while True:
 
-    while available == [] and stop < 10 : #If no positions to "dig" : go to a random place "digged" and do it again
-        stop += 1
-        # Determining the available positions to "dig"
-        x, y = current
         neighbors = []
 
-        if (x > 1 and maze[x-2,y] <= 0) or (x == 1 and maze[x-1,y] <= 0) :
-            neighbors.append((x-1,y))
-        if (x < maze.shape[0]-2 and maze[x+2,y] <= 0) or (x == maze.shape[0]-2 and maze[x+1,y] <= 0) :
-            neighbors.append((x+1,y))
-        if (y > 1 and maze[x,y-2] <= 0) or (y == 1 and maze[x,y-1] <= 0) :
-            neighbors.append((x,y-1))
-        if (y < maze.shape[1]-2 and maze[x,y+2] <= 0) or (y == maze.shape[1]-2 and maze[x,y+1] <= 0) :
-            neighbors.append((x,y+1))
+        if (x > 1 and maze[x-2,y] <= 0) :
+            neighbors.append(((x-1,y),(x-2,y)))
+        if (x < maze.shape[0]-2 and maze[x+2,y] <= 0) :
+            neighbors.append(((x+1,y),(x+2,y)))
+        if (y > 1 and maze[x,y-2] <= 0) :
+            neighbors.append(((x,y-1),(x,y-2)))
+        if (y < maze.shape[1]-2 and maze[x,y+2] <= 0) :
+            neighbors.append(((x,y+1),(x,y+2)))
+        
+        if neighbors == []:
+            return maze
+        else :
+            print(neighbors)
+            next_index = rd.randint(0,len(neighbors)-1)
+            next = neighbors[next_index]
+            maze[next[0]] = 1
 
-        for el in neighbors : 
-            if maze[el] == -1 :
-                return [el] #priority to the exit
-            else :
-                available.append(el)
+        maze = visit(maze,next[1]).copy()
 
-        if available == [] :
-            #Put current at a random place if nowhere to dig
-            one_list = [tuple(pos) for pos in np.argwhere(maze==1)]
-            current = one_list[rd.randint(0,len(one_list)-1)]
+    return maze
 
-    af.affiche_maze(maze)
-
-    return available
 
 def head_or_tail():
     return rd.randint(0,1)
 
 
-af.affiche_maze(generate())
+af.affiche_maze(generate(95))
